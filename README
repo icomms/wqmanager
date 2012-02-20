@@ -1,10 +1,10 @@
-The Water Quality Manager (WQM) tool is a Django application that collects data submitted by users from their cellphone 
+The Water Quality Manager (WQM) tool is a Django application that collects data submitted by users from their cellphone
 (using the Water Quality Reporter application, http://bitbucket.org/icomms/wqreporter). This application is built on Dimagi's
 CommCare HQ application (http://github.com/dimagi/commcare-hq)
 
 ENVIRONMENT SETUP (Ubuntu 10.04)
 --------------------------------
-(see CommCare HQ instructions at http://wiki.github.com/dimagi/commcare-hq/getting-started)
+(see CommCare HQ instructions at https://github.com/dimagi/commcare-hq/wiki/Getting-Started-with-CommCare-HQ-0.9)
 
 apt-get install curl subversion libxml2-dev libxslt1-dev sun-java6-jdk mercurial python-setuptools python-imaging python-mysqldb python-dev
 
