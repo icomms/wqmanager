@@ -42,6 +42,12 @@ git submodule update
 cp local.ini.sample local.ini
 # change relevant entries in local.ini - look for "WQM" and "projectpath" strings
 
+# make data/ and logs/ directories writeable
+# bad
+chmod -R 777 data logs
+# good
+chown -R deployuser data logs
+
 # set up a cron job for projectpath/send-reports.py (once an hour)
 
 RUNNING THE APPLICATION (development)
@@ -51,4 +57,17 @@ python manage.py runserver
 
 RUNNING THE APPLICATION (production)
 ------------------------------------
+Setup WSGI in Apache, listening on the relevant domain/IP. You'll need to put an alias in for the Django media files
+(css, js, etc.). Your Apache VirtualHost will look something like:
 
+<VirtualHost 127.0.0.1:80>
+    ServerName wqmanager.example.com
+
+    Alias /static/admin-media/ /var/www/djangomedia/
+    WSGIScriptAlias / /projectpath/utilities/deployment/hq_wsgi.py
+    WSGIScriptReloading Off
+
+    LogLevel warn
+    ErrorLog /var/log/apache2/wqm-error.log
+    CustomLog /var/log/apache2/wqm-access.log combined
+</VirtualHost>
