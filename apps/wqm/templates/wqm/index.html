@@ -1,0 +1,165 @@
+{% extends "hq/base.html" %}
+{% load adminmedia %} 
+{% load i18n %}
+{% load notification-tags %}
+{% load pagination-tags %}
+{% load wqm-tags %}
+
+{% block title %}{% trans "SamplingPoints Map" %}{% endblock %}
+{% block javascripts %}
+	<script type="text/javascript">
+	window.__admin_media_prefix__ = "{% filter escapejs %}{% admin_media_prefix %}{% endfilter %}";
+	</script>
+	<script type="text/javascript" src="/my_admin/jsi18n/"></script>
+	<script type="text/javascript" src="/static/admin-media/js/core.js"></script>
+	{{ form.media }}
+    <script  type="text/javascript"src="http://www.google.com/jsapi?key=ABQIAAAAwLx05eiFcJGGICFj_Nm3yxSy7OMGWhZNIeCBzFBsFwAAIleLbBRLVT87XVW-AJJ4ZR3UOs3-8BnQ-A"></script>
+    <script type="text/javascript" src="{{MEDIA_URL}}/graphing/flot/jquery.js"></script>
+    <script type="text/javascript" src="{{MEDIA_URL}}/graphing/flot/jquery.flot.js"></script>
+    <script type="text/javascript" src="{{MEDIA_URL}}/aquatest/js/selector.js"></script>
+    <script  type="text/javascript"charset="utf-8">google.load("maps","2.x"); google.load("jquery","1.3.2");</script>
+    
+    <link rel="stylesheet" type="text/css" href="/static/admin-media/css/forms.css"/>
+	<link rel="stylesheet" type="text/css" href="/static/admin-media/css/widgets.css"/>
+    
+    
+<script  type="text/javascript">
+    var samplingpointByID = {};
+    {% for samplingpoint in samplingpoints %}
+     samplingpointByID[{{samplingpoint.id}}] = {name: "{{samplingpoint.name}}", 
+                                                lat: {{samplingpoint.point.y}},
+                                                lng: {{samplingpoint.point.x}},
+                                                };
+    {% endfor %}
+
+    $(document).ready(function(){
+        // initialise the google maps
+        var map = new GMap2(document.getElementById('map'));
+        var southAfrica = new GLatLng(-29.000000, 24.000000);
+        map.setCenter(southAfrica, 5);
+        map.setUIToDefault();
+
+        // add samplingpoint marker to the map
+        var markers = [];
+        count = 0;
+        for (var i in samplingpointByID) {
+            var sPoint = samplingpointByID[i];
+            var point = new GLatLng(sPoint.lat, sPoint.lng);
+
+            // select marker type
+            /*
+            if (sPoint.lat > -29){
+                var greenIcon = new GIcon(G_DEFAULT_ICON);
+                greenIcon.image = "{{MEDIA_URL}}/hq/green_MarkerG.png";
+
+                // Set up our GMarkerOptions object
+                markerOptions = { icon:greenIcon };
+            }
+
+            if (sPoint.lat < -29){
+                var orangeIcon = new GIcon(G_DEFAULT_ICON);
+                orangeIcon.image = "{{MEDIA_URL}}/hq/orange_MarkerO.png";
+
+                // Set up our GMarkerOptions object
+                markerOptions = { icon:orangeIcon };
+            }
+            */
+            var orangeIcon = new GIcon(G_DEFAULT_ICON);
+            orangeIcon.image = "{{MEDIA_URL}}/hq/green_MarkerG.png";
+
+            // Set up our GMarkerOptions object
+            markerOptions = { icon:orangeIcon };
+            
+            marker = new GMarker(point,markerOptions);
+            map.addOverlay(marker);
+            markers[count] = marker;
+            count++;
+        }
+
+        function activate_samplingpoints() {
+            // Add samplingpoint click handler
+            $('.samplingpoint').each(function () {
+                $(this).click(function() {
+                    var samplingpoint = samplingpointByID[this.id];
+                    var center = new GLatLng(samplingpoint.lat, samplingpoint.lng);
+                    current_object = $(this);
+                    //if (marker) map.removeOverlay(marker);
+                    marker = new GMarker(center,markerOptions);
+                    map.addOverlay(marker);
+                    map.panTo(center);
+    		var markerOffset = map.fromLatLngToDivPixel(marker.getPoint());
+    		$("#message").show(); 
+                }).hover(
+                    function () {this.className = this.className.replace('OFF', 'ON');}, 
+                    function () {this.className = this.className.replace('ON', 'OFF');}
+                );
+            });
+        }
+
+        activate_samplingpoints();
+
+        
+        // reposition to marker on click
+        $(markers).each(function(i,marker){
+          GEvent.addListener(marker,"click", function(){
+            displayPoint(marker, i);
+          });
+        });
+
+        // put the message div in the map
+        $("#message").appendTo(map.getPane(G_MAP_FLOAT_SHADOW_PANE));
+
+        // adding some spices
+        function displayPoint(marker, index){
+          $("#message").hide();
+          var moveEnd = GEvent.addListener(map,"moveend", function(){
+            var markerOffset = map.fromLatLngToDivPixel(marker.getLatLng());
+            $("#message")
+              .fadeIn()
+              .css({ top:markerOffset.y, left:markerOffset.x });
+            GEvent.removeListener(moveEnd);
+          });
+          map.panTo(marker.getLatLng());
+          map.setCenter(marker.getLatLng(), 10);
+        }
+
+        
+    });
+</script>
+
+{% endblock %}
+
+
+{% block content %}
+<div id="subheading">
+	<ul>
+		<li><a href="{% url wqm.views.index %}"><b>Sampling Point</b></a></li>
+		<li><a href="{% url wqm.views.mapindex %}"><b>Map</b></a></li>
+		<li>&nbsp;</li>
+	</ul> 
+</div>
+<div>
+  <form action='#' method='POST'>
+    <h3>Sample taken between
+	{{ form.startdate }}
+      and
+	{{ form.enddate }}
+	{{ form.failure }}{{form.failure.help_text}}
+	<!-- 
+	<input type='checkbox' value='failure' name="failure" /> Show failures only
+	-->
+    	<input type='submit' value='Filter' />
+     
+    </h3>
+  </form>
+</div>
+
+<div id="message"style="display:none;">Test message</div>
+<div id=map></div>
+<div id=samplingpoints>
+    <p>Jump to Sampling Point </p>
+    {{content}}
+</div>
+
+</body>
+{% endblock %}

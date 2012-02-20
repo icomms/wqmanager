@@ -1,0 +1,40 @@
+{% extends "ui-base.html" %}
+{% block title %}WQM - Report Preview{% endblock %}
+{% block styles %}
+	
+	#content li{
+		list-style: none;
+		margin:0;
+		padding:0;
+	}
+	
+	#content table.report
+	{
+		border: 1px solid #AAAAAA;
+	}
+	
+	#content table.report td, #content table.report th
+	{
+		border: 1px solid #AAAAAA;
+		padding: 6px;
+		white-space: nowrap;
+	}
+	
+{% endblock %}
+{% block header %}{{domain.full_name}}{% endblock %}
+{% block navigation %}{% endblock %}
+{% block menu %}{% endblock %}
+{% block logout %}{% endblock %}
+{% block content %}
+<form id="form" action="/ui/report-excel/" method="post">
+	<input id="hdnResultType" name="hdnResultType" type="hidden" value="{{result_type}}"/>
+	<input type="hidden" id="txtStartDate" name="txtStartDate" value="{{start_date}}"/>
+	<input type="hidden" id="txtEndDate" name="txtEndDate" value="{{end_date}}"/>
+	<input type="hidden" id="chkReporter" name="chkReporter" value="{{reporters}}"/>
+	<input id="btnDownloadReport" name="btnDownloadReport" type="submit" value="Dowload Excel Report" />
+	<br/><br/>
+	{{report_table|safe}}
+	<br/>
+	<input id="btnDownloadReport_Bottom" name="btnDownloadReport_Bottom" type="submit" value="Dowload Excel Report" />
+</form>
+{% endblock %}

@@ -1,0 +1,12 @@
+<samplepoint>
+    <id>{{samplepoint.id}}</id>
+    <pointcode>{% if samplepoint.active %}{{samplepoint.code}}{% else %}DELETED{% endif %}</pointcode>
+    <pointname>{{samplepoint.name}}</pointname>
+    <areaname>{{samplepoint.wqmarea.name}}</areaname>
+    <deliverysystem>{% if samplepoint.delivery_system != None %}{{samplepoint.delivery_system}}{% endif %}</deliverysystem>
+    <treatment>{% if samplepoint.treated %}treated{% else %}untreated{% endif %}</treatment>
+    <pointtype>{{samplepoint.point_type}}</pointtype>
+    <waterrunning>{% if samplepoint.water_running %}true{% else %}false{% endif %}</waterrunning>
+    <coordinates></coordinates>
+    <lastupdated>{% if samplepoint.modified %}{{samplepoint.modified.date}}{% else %}{{samplepoint.created.date}}{% endif %}</lastupdated>
+</samplepoint>

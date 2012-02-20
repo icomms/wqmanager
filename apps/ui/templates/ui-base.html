@@ -1,0 +1,155 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<link rel="stylesheet" href="style.css" />
+	<title>{% block title %}WQM{% endblock %}</title>
+	{% block head %}{% endblock %}
+	
+	<style type="text/css">
+	  html {
+		 height: 100%;
+		 margin: 0;
+	  }
+		body{
+			font-family: Arial;
+			margin:0;
+			padding:0;
+			font-size: 0.9em;
+			height: 100%;
+		}
+		
+		#wrapper {
+			min-height: 100%;
+			height: auto !important;
+			height: 100%;
+			margin: 0 auto -20px; /* the bottom margin is the negative value of the footer's height */
+			padding: 0;
+		}
+
+		
+		h1 {
+			font-size: 1.3em;
+			margin:0;
+			padding:0;
+		}
+		
+		#header{
+			padding: 15px 10px 10px 10px;			
+			border-bottom: solid 1px #AAAAAA;
+			margin: 0;
+            background: url('http://aquatest-za.org/images/logo_blue.jpg') no-repeat #00709f 0px 3px;
+		}
+		
+		#menu{
+			margin: 0;
+			padding: 3px;
+			background-color: #EEEEEE;
+			border-bottom: solid 1px #AAAAAA;
+		}
+		
+		#menuright{
+			padding: 0;
+			margin: 0;
+			text-align: right;
+		}
+		
+		#menuleft{
+			padding: 0;
+			margin: 0;
+			float:left;
+		}
+		
+		#menu ul 
+		{
+			padding: 0;
+			margin: 0;
+			display: inline;
+		}
+		
+		#menu li
+		{
+			padding: 3px;
+			padding-right: 10px;
+			padding-left: 10px;
+			margin: 0;
+			display: inline;
+			border-left: solid 1px #AAAAAA;
+		}
+		
+		#menu li.userinfo
+		{
+			border-left: none;
+			font-size: 0.8em;
+		}
+		
+		#menu a
+		{
+			color: #2255DD;
+		}
+		
+		div#content{
+			padding: 10px;
+		}
+		
+		span.note{
+			font-size: 0.8em;
+			color: #AAAAAA;
+		}
+		
+		#footer, #push{
+			text-align: center;
+			height: 20px;
+		}
+		
+		#footer {
+			font-size: 0.8em;
+			border-top: solid 1px #DDDDDD;
+		}
+		
+		form
+		{
+		 margin: 0;
+		 padding: 0;
+		}
+		
+		{% block styles %}{% endblock %}
+		
+	</style>
+</head>
+
+<body {% block bodytag %}{% endblock %}>
+   <div id="wrapper">
+	<div id="header"><h1>&nbsp;</h1></div>
+	{% if user.is_authenticated %}
+	<div id="menu">
+		 <div id="menuleft">
+            <span style="padding-left: 10px; padding: 10px;">
+                {% block header %}{% endblock %} {% if user.username == "guest" %}(sample data){% endif %}
+            </span>
+            
+			<ul>
+			   {% block navigation %}
+			   <li><a href="/ui/map/{{domain.id}}">Map View</a></li>
+			   <li><a href="/ui/reporters/{{domain.id}}">Search Reporters</a></li>
+			   <li><a href="/ui/admin/{{domain.id}}">Admin</a></li>
+			   {% endblock %}
+			<ul>
+		 </div>
+		 <div id="menuright">
+			<ul>
+			   <li class="userinfo">logged in as <strong>{{ user.username }}</strong></li>
+			   {% block menu %}<li><a href="/ui/select-domain">Change Domain</a></li>{% endblock %}
+			   {% block logout %}<li><a href="/ui/logout">Logout</a></li>{% endblock %}
+			<ul>
+		 </div>
+		
+	</div>
+	{% endif %}
+	<div id="content">{% block content %}{% endblock %}</div>
+	<div id="push"></div>
+   </div>
+	<div id="footer">
+	  Copyright &copy 2011 iCOMMS - Contact <a href="mailto:michael@icomms.org">michael@icomms.org</a> for licensing or access queries.
+	</div>
+</body>
+</html>

@@ -1,0 +1,54 @@
+The Water Quality Manager (WQM) tool is a Django application that collects data submitted by users from their cellphone 
+(using the Water Quality Reporter application, http://bitbucket.org/icomms/wqreporter). This application is built on Dimagi's
+CommCare HQ application (http://github.com/dimagi/commcare-hq)
+
+ENVIRONMENT SETUP (Ubuntu 10.04)
+--------------------------------
+(see CommCare HQ instructions at http://wiki.github.com/dimagi/commcare-hq/getting-started)
+
+apt-get install curl subversion libxml2-dev libxslt1-dev sun-java6-jdk mercurial python-setuptools python-imaging python-mysqldb python-dev
+
+easy_install --upgrade pytz
+easy_install django-imagekit lxml==2.2.2 django-digest python-digest decorator mocker south yolk 
+easy_install django
+
+apt-get install libproj0 python-pyproj 
+sudo ln -s /usr/lib/libproj.so.0 /usr/lib/libproj.so 
+
+# for ubuntu hardy heron (8.04 and lower)
+apt-get install python2.5-dev
+easy_install pyproj
+
+apt-get remove libgeos-c1 libgeos2c2a postgis postgresql-8.3-postgis proj 
+apt-get install postgresql-server-dev-8.3 libpq-dev
+http://docs.djangoproject.com/en/dev/ref/contrib/gis/install/#geosbuild
+http://docs.djangoproject.com/en/dev/ref/contrib/gis/install/#proj4
+http://docs.djangoproject.com/en/dev/ref/contrib/gis/install/#gdalbuild
+http://docs.djangoproject.com/en/dev/ref/contrib/gis/install/#postgis
+# end 8.04 instructions
+
+wget https://spideroak.com/dist/spideroak-zipstream-1.0.1.tar.bz2
+tar jxvf spideroak-zipstream-1.0.1.tar.bz2 && cd spideroak-zipstream-1.0.1 && sudo python setup.py install
+
+GETTING THE SOURCE CODE
+-----------------------
+git clone https://github.com/icomms/wqmanager
+
+PROJECT SETUP
+-------------
+git submodule init
+git submodule update
+
+cp local.ini.sample local.ini
+# change relevant entries in local.ini - look for "WQM" and "projectpath" strings
+
+# set up a cron job for projectpath/send-reports.py (once an hour)
+
+RUNNING THE APPLICATION (development)
+-------------------------------------
+python manage.py runserver
+# browse to http://127.0.0.1:8000/
+
+RUNNING THE APPLICATION (production)
+------------------------------------
+

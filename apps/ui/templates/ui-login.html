@@ -1,0 +1,37 @@
+{% extends "ui-base.html" %}
+{% block title %}WQM - Login{% endblock %}
+
+{% block styles %}
+	
+	#content li{
+		list-style: none;
+		margin:0;
+		padding:0;
+	}
+	
+	label
+	{
+	}
+	span.error
+	{
+		color: #FF0000;
+	}
+	
+	
+	
+{% endblock %}
+{% block header %}WQM - Login{% endblock %}
+{% block navigation %}{% endblock %}
+{% block menu %}{% endblock %}
+{% block content %}
+<form  method="post">
+	{% if message %}{{message}}<br/><br/>{%endif%}
+	{% if error %}<span class="error">{{error}}</span><br/><br/>{%endif%}
+	<label for="txtUsername">Username: </label><br/><input type="text" id="txtUsername" name="txtUsername"/><br/>
+	<label for="txtPassword">Password: </label><br/><input type="password" id="txtPassword" name="txtPassword"/>
+   <input type="submit" value="Log in" />
+   <br/>
+	<br/>
+	Please contact <a href="mailto:michael@icomms.org">michael@icomms.org</a>  if you would like access to this system.
+</form>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "ui-base.html" %}
+{% block title %}WQM - Domain Selection {% endblock %}
+
+{% block styles %}
+	
+	#content li{
+		list-style: none;
+		margin:0;
+		padding:0;
+	}
+	
+	
+{% endblock %}
+{% block header %}WQM - Domain Selection{% endblock %}
+{% block navigation %}{% endblock %}
+{% block menu %}{% endblock %}
+{% block content %}
+{% if domain_list %}
+<p>You are currently logged in as <strong>{{ user.username }}</strong>. Please select a domain to report on:</p>
+<form action="/ui/select-domain/" method="post">
+
+<select id="domain" name="domain">
+{% for domain in domain_list %}
+	<option id="opt{{ domain.id }}" value="{{ domain.id }}">{{ domain.full_name }} ({{ domain.name }})</option>
+		<!--<input id="rad{{ domain.id }}" value="{{ domain.id }}" type="radio" name="domain"/>-->
+		<!-- add some js to allow people to click on the text rather than having to click on the radio button -->
+		<!--<span onclick="javascript:document.getElementById('rad{{ domain.id }}').click();"> {{ domain.full_name }} ({{ domain.name }})</span>-->
+	
+{% endfor %}
+</select>
+<input type="submit" value="Display Map" />
+</form>
+{% else %}
+<p>You do not have access to any domains.</p>
+{% endif %}
+{% endblock %}

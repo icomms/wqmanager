@@ -1,0 +1,5 @@
+<forms>
+    {% for form in forms %}
+    <form url="http://{{base_url}}/xforms/download/{{form.id}}" version="{% if form.version %}{{form.version}}{% else %}0{% endif %}">{{form.form_display_name}}</form>
+    {% endfor %} 
+</forms>

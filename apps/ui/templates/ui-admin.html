@@ -1,0 +1,1252 @@
+{% extends "ui-base.html" %}
+{% block title %}WQM - Admin{% endblock %}
+{% block head %}
+	
+<link href="/static/ui/jquery-ui/themes/custom-theme/jquery.ui.all.css" rel="stylesheet" type="text/css"/>
+<link href="/static/ui/jquery-ui/themes/base/jquery.ui.selectmenu.css" rel="stylesheet" type="text/css"/>
+	
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.5.1.min.js"></script>
+
+
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
+
+<script src="/static/ui/jquery-ui/js/jquery.ui.selectmenu.js"></script>
+
+<script type="text/javascript">
+	var tips = null;
+	
+	$(function() {
+		$( "#accordion" ).accordion({
+			autoHeight: false,
+			navigation: true
+		});
+		
+		
+
+	});
+	
+	$(function() {
+		$( ".btnDelete" ).button({
+            icons: {
+                primary: "ui-icon-trash"
+            }});
+			
+		$( ".btnEdit" ).button({
+            icons: {
+                primary: "ui-icon-pencil"
+            }});
+			
+		$( ".btnAdd" ).button({
+            icons: {
+                primary: "ui-icon-plus"
+            }});
+			
+		$( ".btnSave" ).button({
+		icons: {
+			primary: "ui-icon-disk"
+		}});
+		
+		$("select").selectmenu();
+		
+		$(function() {
+			$( ".radio" ).buttonset();
+		});
+		
+		$(function() {
+			$( ".selectable" ).selectable();
+		});
+		//$(function() {
+		//	$( "#notification-normalranges.selectable" ).selectable({
+		//	stop: function() {
+		//		
+		//	}
+		//});
+
+		//});
+
+
+	});
+
+	function updateTips( t ) {
+		tips
+			.text( t )
+			.addClass( "ui-state-highlight" );
+		setTimeout(function() {
+			tips.removeClass( "ui-state-highlight", 1500 );
+		}, 500 );
+	}
+
+	function checkLength( o, n, min, max ) {
+		if ( o.val().length > max || o.val().length < min ) {
+			o.addClass( "ui-state-error" );
+			updateTips( "Length of " + n + " must be between " +
+				min + " and " + max + "." );
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
+	function checkArrayLengthMin( o, n, min, list) {
+		var length = 0;
+		if (o.val() != '' && o.val() != null && o.val().length > 0)
+			length =  o.val().split(',').length;
+		
+		if (length < min ) {
+			list.addClass( "ui-state-error" );
+			updateTips( "Number of selected items for field " + n + " must be at least " + min + "." );
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
+	function checkSelected( o, n ) {
+		if ( o.val() == "" ) {
+			selectAnchor = $("#" + o.attr('name') + "-button")
+			selectAnchor.addClass( "ui-state-error" );
+			updateTips( "You must select a value for " + n + "." );
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	function checkRegexp( o, regexp, n ) {
+		if ( !( regexp.test( o.val() ) ) ) {
+			o.addClass( "ui-state-error" );
+			updateTips( n );
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
+	function validate_manager()
+	{
+		var name = $( "#manager-name" ),
+			telephone = $( "#manager-telephone" ),
+			email = $( "#manager-email" );
+			
+		
+		var bValid = true;
+		name.removeClass( "ui-state-error" );
+		telephone.removeClass( "ui-state-error" );
+		email.removeClass( "ui-state-error" );
+
+		bValid = bValid && checkLength( name, "username", 3, 200 );
+		bValid = bValid && checkRegexp( name, /^[a-z]([0-9a-z\s])+$/i, "Name may consist of a-z and spaces, and must begin with a letter." );
+		bValid = bValid && checkLength( telephone, "telephone", 6, 60 );
+		bValid = bValid && checkRegexp( telephone, /^([0-9])+$/, "Telephone field only allow : 0-9" );
+		
+		bValid = bValid && checkLength( email, "email", 0, 200 );
+		if (email.val().length > 0)
+		{
+			// From jquery.validate.js (by joern), contributed by Scott Gonzalez: http://projects.scottsplayground.com/email_address_validation/
+			bValid = bValid && checkRegexp( email, /^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?$/i, "eg. ui@jquery.com" );
+		}
+		return bValid;
+	}
+
+	
+	function add_manager(){
+		var init_tips = $( "#manager-validation" ).html();
+		tips = $( "#manager-validation" );
+		$( "#manager-dialog" ).dialog( "destroy" );
+		$( "#manager-dialog" ).dialog({
+			autoOpen: true,
+			height: 350,
+			width: 450,
+			modal: true,
+			title: "Add new manager",
+			buttons: {
+				"Add manager": function() {					
+					var bValid = validate_manager();
+
+					if ( bValid ) {
+						$( "#manager-form" ).submit();
+						$( this ).dialog( "close" );
+					}
+				},
+				Cancel: function() {
+					$( this ).dialog( "close" );
+				}
+			},
+			close: function() {
+				$( "#manager-validation" ).html(init_tips);
+				$( "#manager-dialog input" ).val( "" ).removeClass( "ui-state-error" );
+			}
+		});
+	}
+	
+	function edit_manager(id, name, phone, email){
+		$( "#manager-id" ).val(id);
+		$( "#manager-name" ).val(name);
+		$( "#manager-telephone" ).val(phone);
+		$( "#manager-email" ).val(email);		
+			
+		var init_tips = $( "#manager-validation" ).html();
+		tips = $( "#manager-validation" );
+		
+		$( "#manager-dialog" ).dialog( "destroy" );
+		$( "#manager-dialog" ).dialog({
+			autoOpen: true,
+			height: 350,
+			width: 450,
+			modal: true,
+			title: "Edit manager",
+			buttons: {
+				"Save manager": function() {					
+					var bValid = validate_manager();
+
+					if ( bValid ) {
+						$( "#manager-form" ).submit();
+						$( this ).dialog( "close" );
+					}
+				},
+				Cancel: function() {
+					$( this ).dialog( "close" );
+				}
+			},
+			close: function() {
+				$( "#manager-validation" ).html(init_tips);
+				$("#manager-dialog input").val( "" ).removeClass( "ui-state-error" );
+			}
+		});
+	}
+	
+	function delete_manager(id, name){
+		$( "#manager-delete-id" ).val(id);
+		
+		$( "#manager-delete-message" ).html('<span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>The manager <strong>"' + name + '"</strong> will be deleted. Are you sure?');
+		$( "#manager-delete-confirm" ).dialog({
+			autoOpen: true,
+			resizable: false,
+			height: 175,
+			width: 300,
+			modal: true,
+			buttons: {
+				"Delete manager": function() {
+					$( "#manager-delete-form" ).submit();
+					$( this ).dialog( "close" );
+				},
+				Cancel: function() {
+					$( this ).dialog( "close" );
+				}
+			},
+			close: function() {				
+			}
+		});
+	}
+	
+	function validate_notification()
+	{
+		var description = $( "#notification-description" ),
+			xform = $( "#notification-xform" ),
+			message_text = $( "#notification-xform" );
+		
+		var bValid = true;
+		description.removeClass( "ui-state-error" );
+		xform.removeClass( "ui-state-error" );
+		message_text.removeClass( "ui-state-error" );
+
+		bValid = bValid && checkLength( description, "description", 3, 50 );
+		bValid = bValid && checkSelected( xform, "xform");
+		bValid = bValid && checkLength( message_text, "message text", 3, 160 );
+		
+		return bValid;
+	}
+
+	function clear_notification(init_tips)
+	{
+		$( "#notification-validation" ).html(init_tips);
+		$( "#notification-id" ).val("");
+		$( "#notification-dialog input:text" ).val( "" ).removeClass( "ui-state-error" );
+		$( "#notification-dialog select" ).selectmenu("value","");				
+		$( "#notification-dialog textarea" ).val( "" ).removeClass( "ui-state-error" );
+		$( "#notification-dialog a" ).removeClass( "ui-state-error" );
+		
+		$( "#notification-dialog input:radio[name=notification-sendpererror]" ).removeAttr("checked");
+		$( "#notification-dialog input:radio[value='SEND_ONE']" ).attr("checked","checked");
+		
+		$( "#notification-dialog input:radio[name=notification-sendtooperator]" ).removeAttr("checked");
+		$( "#notification-dialog input:radio[value='TO_MANAGER']" ).attr("checked","checked");
+		$( ".radio" ).buttonset("refresh");
+		
+		$( "#notification-dialog li").removeClass("ui-selected");
+		
+		$('#div-notification-managers').show(0);
+		
+	}
+	
+	
+	
+	
+	function normal_range_index_to_id(index){
+		switch (index)
+		{
+			{% for nr in normal_ranges%}
+			case {{forloop.counter0}}:
+				return {{nr.id}};
+				break;
+			{% endfor %}
+		}
+	}
+	
+	function normal_range_id_to_index(id){
+		switch (id)
+		{
+			{% for nr in normal_ranges%}
+			case '{{nr.id}}':
+				return {{forloop.counter0}};
+				break;
+			{% endfor %}
+		}
+	}
+	
+	function sampling_point_index_to_id(index){
+		switch (index)
+		{
+			{% for nr in sampling_points%}
+			case {{forloop.counter0}}:
+				return {{nr.id}};
+				break;
+			{% endfor %}
+		}
+	}
+	
+	function sampling_point_id_to_index(id){
+		switch (id)
+		{
+			{% for nr in sampling_points%}
+			case '{{nr.id}}':
+				return {{forloop.counter0}};
+				break;
+			{% endfor %}
+		}
+	}
+	
+	function manager_index_to_id(index){
+		switch (index)
+		{
+			{% for nr in managers%}
+			case {{forloop.counter0}}:
+				return {{nr.id}};
+				break;
+			{% endfor %}
+		}
+	}
+	
+	function manager_id_to_index(id){
+		switch (id)
+		{
+			{% for nr in managers%}
+			case '{{nr.id}}':
+			case {{nr.id}}:
+				return {{forloop.counter0}};
+				break;
+			{% endfor %}
+		}
+	}
+	
+	
+	function area_index_to_id(index){
+		switch (index)
+		{
+			{% for nr in areas%}
+			case {{forloop.counter0}}:
+				return {{nr.id}};
+				break;
+			{% endfor %}
+		}
+	}
+	
+	function area_id_to_index(id){
+		switch (id)
+		{
+			{% for nr in areas%}
+			case '{{nr.id}}':
+				return {{forloop.counter0}};
+				break;
+			{% endfor %}
+		}
+	}
+	
+	function update_notification_list_selections()
+	{
+		var normal_ranges = $( "#notification-normalranges.selectable");
+		var result = '';
+		$( ".ui-selected", normal_ranges ).each(function() {
+			var index = $( "#notification-normalranges.selectable li" ).index( this );
+			result = result + normal_range_index_to_id(index) + ',' ;
+		});
+		
+		result = result.substring(0, result.length - 1);
+		$("#notification-selected-normalranges").val(result);
+		
+		var sampling_points = $( "#notification-samplingpoints.selectable");
+		result = '';
+		$( ".ui-selected", sampling_points ).each(function() {
+			var index = $( "#notification-samplingpoints.selectable li" ).index( this );
+			result = result + sampling_point_index_to_id(index) + ',' ;
+		});
+		
+		result = result.substring(0, result.length - 1);
+		$("#notification-selected-samplingpoints").val(result);
+		
+		var managers = $( "#notification-managers.selectable");
+		result = '';
+		$( ".ui-selected", managers ).each(function() {
+			var index = $( "#notification-managers.selectable li" ).index( this );
+			result = result + manager_index_to_id(index) + ',' ;
+		});
+		
+		result = result.substring(0, result.length - 1);
+		$("#notification-selected-managers").val(result);
+		
+	}
+	
+	function add_notification(){
+		var init_tips = $( "#notification-validation" ).html();
+		tips = $( "#notification-validation" );
+		$( "#notification-dialog" ).dialog( "destroy" );
+		$( "#notification-dialog" ).dialog({
+			autoOpen: true,
+			height: 700,
+			width: 900,
+			modal: true,
+			title: "Add new notification",
+			resizable: false,
+			buttons: {
+				"Add notification": function() {					
+					var bValid = validate_notification();
+
+					if ( bValid ) {
+						update_notification_list_selections();
+						$( "#notification-form" ).submit();
+						$( this ).dialog( "close" );
+					}
+				},
+				Cancel: function() {
+					$( this ).dialog( "close" );
+				}
+			},
+			close: function() {
+				clear_notification(init_tips);
+			}
+		});
+	}
+	
+	function edit_notification(id, description, xform, message_text, send_message_per_error, send_to_operator, normal_ranges, sampling_points, managers){
+		// set all form values
+		
+		// start with the easy stuff, text boxes and select
+		// id is stored in a hidden field for saving changes
+		$( "#notification-id" ).val(id);
+		$( "#notification-description" ).val(description);
+		$( "#notification-xform" ).selectmenu("value",xform);		
+		$( "#notification-messagetext" ).val(message_text);
+		
+		// next move on to the radio buttons
+		$( "#notification-dialog input:radio[name=notification-sendpererror]" ).removeAttr("checked");
+		if (send_message_per_error == '0')
+		{			
+			$( "#notification-dialog input:radio[value='SEND_ONE']" ).attr("checked","checked");
+		}
+		else
+		{
+			$( "#notification-dialog input:radio[value='SEND_MANY']" ).attr("checked","checked");
+		}
+		
+		$( "#notification-dialog input:radio[name=notification-sendtooperator]" ).removeAttr("checked");
+		if (send_to_operator == '0')
+		{			
+			$( "#notification-dialog input:radio[value='TO_MANAGER']" ).attr("checked","checked");
+		}
+		else
+		{
+			$( "#notification-dialog input:radio[value='TO_OPERATOR']" ).attr("checked","checked");
+		}
+		// update the ui
+		$( ".radio" ).buttonset("refresh");
+		
+		// normal ranges
+		normal_range_array = normal_ranges.split(",");				
+		var i = 0;
+		for(i = 0; i < normal_range_array.length; i++)
+		{
+			if (normal_range_array[i] != ''){
+				index = normal_range_id_to_index(normal_range_array[i]);
+				index++;
+				$("#notification-normalranges li:nth-child(" + index + ")").addClass("ui-selected");
+			}
+		}
+		
+		// sampling points
+		sampling_point_array = sampling_points.split(",");				
+		for(i = 0; i < sampling_point_array.length; i++)
+		{
+			if (sampling_point_array[i] != ''){
+				index = sampling_point_id_to_index(sampling_point_array[i]);
+				index++;
+				$("#notification-samplingpoints li:nth-child(" + index + ")").addClass("ui-selected");
+			}
+		}
+		
+		// managers
+		manager_array = managers.split(",");				
+		for(i = 0; i < manager_array.length; i++)
+		{
+			if (manager_array[i] != ''){
+				index = manager_id_to_index(manager_array[i]);
+				index++;
+				$("#notification-managers li:nth-child(" + index + ")").addClass("ui-selected");
+			}
+		}
+		
+		// all fields set, show the modal dialog
+		
+		var init_tips = $( "#notification-validation" ).html();
+		tips = $( "#notification-validation" );
+		$( "#notification-dialog" ).dialog( "destroy" );
+		$( "#notification-dialog" ).dialog({
+			autoOpen: true,
+			height: 700,
+			width: 900,
+			modal: true,
+			title: "Edit notification",
+			resizable: false,
+			buttons: {
+				"Save notification changes": function() {					
+					var bValid = validate_notification();
+
+					if ( bValid ) {
+						update_notification_list_selections();
+						$( "#notification-form" ).submit();
+						$( this ).dialog( "close" );
+					}
+				},
+				Cancel: function() {
+					$( this ).dialog( "close" );
+				}
+			},
+			close: function() {
+				clear_notification(init_tips);
+			}
+		});
+		
+		if (send_to_operator == '0')
+		{			
+			$('#div-notification-managers').show(0);
+		}
+		else
+		{
+			$('#div-notification-managers').hide(0);
+		}
+	}
+	
+	function delete_notification(id, name){
+		$( "#notification-delete-id" ).val(id);
+		
+		$( "#notification-delete-message" ).html('<span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>The notification <strong>"' + name + '"</strong> will be deleted. Are you sure?');
+		$( "#notification-delete-confirm" ).dialog({
+			autoOpen: true,
+			resizable: false,
+			height: 175,
+			width: 300,
+			modal: true,
+			buttons: {
+				"Delete notification": function() {
+					$( "#notification-delete-form" ).submit();
+					$( this ).dialog( "close" );
+				},
+				Cancel: function() {
+					$( this ).dialog( "close" );
+				}
+			},
+			close: function() {				
+			}
+		});
+	}
+	
+	function update_email_report_list_selections()
+	{
+		var areas = $( "#email_report-areas.selectable");
+		var result = '';
+		$( ".ui-selected", areas ).each(function() {
+			var index = $( "#email_report-areas.selectable li" ).index( this );
+			result = result + area_index_to_id(index) + ',' ;
+		});
+		
+		result = result.substring(0, result.length - 1);
+		$("#email_report-selected-areas").val(result);
+		
+		var days = $( "#email_report-days.selectable");
+		result = '';
+		$( ".ui-selected", days ).each(function() {
+			var index = $( "#email_report-days.selectable li" ).index( this );
+			result = result + (index + 1) + ',' ;
+		});
+		
+		result = result.substring(0, result.length - 1);
+		$("#email_report-selected-days").val(result);
+		
+		var managers = $( "#email_report-managers.selectable");
+		result = '';
+		$( ".ui-selected", managers ).each(function() {
+			var index = $( "#email_report-managers.selectable li" ).index( this );
+			result = result + manager_index_to_id(index) + ',' ;
+		});
+		
+		result = result.substring(0, result.length - 1);
+		$("#email_report-selected-managers").val(result);
+		
+	}
+	
+	function validate_email_report()
+	{
+		var description = $( "#email_report-description" ),
+			delivery_day = $( "#email_report-delivery_day" ),
+			managers = $("#email_report-selected-managers"),
+			days = $("#email_report-selected-days"),
+			areas = $("#email_report-selected-areas"),
+			delivery_type = $( "#email_report-dialog input:radio[name=email_report-type][checked=true]" ).val();
+			
+			managers_div = $("#div-email_report-managers"),
+			days_div = $("#email_report-days"),
+			areas_div = $("#div-email_report-areas");
+			
+		
+		var bValid = true;
+		description.removeClass( "ui-state-error" );
+		delivery_day.removeClass( "ui-state-error" );
+		managers.removeClass( "ui-state-error" );
+		days.removeClass( "ui-state-error" );
+		areas.removeClass( "ui-state-error" );
+		managers_div.removeClass( "ui-state-error" );
+		days_div.removeClass( "ui-state-error" );
+		areas_div.removeClass( "ui-state-error" );
+
+		bValid = bValid && checkLength( description, "description", 3, 200 );
+		
+		bValid = bValid && checkArrayLengthMin(managers, "managers",1, managers_div);
+		
+		if (delivery_type == 'CUSTOM')
+		{
+			bValid = bValid && checkArrayLengthMin(days, "days",1, days_div);
+		}
+		else if (delivery_type == 'WEEKLY')
+		{
+			bValid = bValid && checkSelected(delivery_day, "delivery day");
+		}
+		
+		return bValid;
+	}
+
+	function clear_email_report(init_tips)
+	{
+		$( "#email_report-validation" ).html(init_tips);
+		$( "#email_report-id" ).val("");
+		$( "#email_report-dialog input:text" ).val( "" ).removeClass( "ui-state-error" );
+		$( "#email_report-dialog select" ).selectmenu("value","");				
+		$( "#email_report-dialog textarea" ).val( "" ).removeClass( "ui-state-error" );
+		$( "#email_report-dialog a" ).removeClass( "ui-state-error" );
+		
+		$( "#email_report-dialog input:radio[name=email_report-type]" ).removeAttr("checked");
+		$( "#email_report-dialog input:radio[value='WEEKLY']" ).attr("checked","checked");
+		$( ".radio" ).buttonset("refresh");
+		
+		$( "#email_report-dialog li").removeClass("ui-selected");
+		
+		$('#div-email_report-days').hide();
+		$('#div-email_report-delivery_day').show();
+		
+		var	managers_div = $("#div-email_report-managers"),
+		days_div = $("#email_report-days"),
+		areas_div = $("#div-email_report-areas");
+
+		managers_div.removeClass( "ui-state-error" );
+		days_div.removeClass( "ui-state-error" );
+		areas_div.removeClass( "ui-state-error" );
+		
+	}
+	
+	function add_email_report(){
+		var init_tips = $( "#email_report-validation" ).html();
+		tips = $( "#email_report-validation" );
+		
+		$( "#email_report-dialog" ).dialog( "destroy" );
+		$( "#email_report-dialog" ).dialog({
+			autoOpen: true,
+			height: 700,
+			width: 830,
+			modal: true,
+			title: "Add new email_report",
+			buttons: {
+				"Add email report": function() {					
+					update_email_report_list_selections();
+					var bValid = validate_email_report();
+
+					if ( bValid ) {						
+						$( "#email_report-form" ).submit();
+						$( this ).dialog( "close" );
+					}
+				},
+				Cancel: function() {
+					$( this ).dialog( "close" );
+				}
+			},
+			close: function() {
+				clear_email_report(init_tips);
+			}
+		});
+	}
+	
+	function edit_email_report(id, description, template, delivery_type, delivery_day, areas, managers, days){
+		
+		$( "#email_report-id" ).val(id);
+		$( "#email_report-description" ).val(description);
+		$( "#email_report-template" ).selectmenu("value",template);	
+		$( "#email_report-delivery_day" ).selectmenu("value",delivery_day);
+		
+		days_array = days.split(",");				
+		var i = 0;
+		
+		
+		$( "#email_report-dialog input:radio[name=email_report-type]" ).removeAttr("checked");
+		if (delivery_type == 'Weekly'){			
+			$( "#email_report-dialog input:radio[value='WEEKLY']" ).attr("checked","checked");
+			$('#div-email_report-delivery_day').show();
+		}
+		else
+		{
+			$('#div-email_report-delivery_day').hide();
+			if (days_array.length == 2 & days_array[0] == '1')
+			{
+				$( "#email_report-dialog input:radio[value='MONTHLY']" ).attr("checked","checked");
+			}
+			else if (days_array.length == 3 & days_array[0] == '1' & days_array[1] == '16')
+			{
+				$( "#email_report-dialog input:radio[value='BIMONTHLY']" ).attr("checked","checked");
+			}
+			else
+			{
+				$( "#email_report-dialog input:radio[value='CUSTOM']" ).attr("checked","checked");
+				$('#div-email_report-days').show();
+				
+				for(i = 0; i < days.length; i++)
+				{
+					if (days_array[i] != '' & days_array[i] != null){
+						index = days_array[i];
+						$("#email_report-days li:nth-child(" + index + ")").addClass("ui-selected");
+					}
+				}
+			}
+		}
+		
+		$( ".radio" ).buttonset("refresh");
+		
+		
+		// managers
+		manager_array = managers.split(",");				
+		for(i = 0; i < manager_array.length; i++)
+		{
+			if (manager_array[i] != '' & manager_array[i] != null){
+				index = manager_id_to_index(manager_array[i]);
+				index++;				
+				$("#email_report-managers li:nth-child(" + index + ")").addClass("ui-selected");
+			}
+		}
+		
+		// areas
+		area_array = areas.split(",");
+		for(i = 0; i < area_array.length; i++)
+		{
+			if (area_array[i] != '' & area_array[i] != null){
+				index = area_id_to_index(area_array[i]);
+				index++;
+				$("#email_report-areas li:nth-child(" + index + ")").addClass("ui-selected");
+			}
+		}
+		
+		var init_tips = $( "#email_report-validation" ).html();
+		tips = $( "#email_report-validation" );
+		
+		$( "#email_report-dialog" ).dialog( "destroy" );
+		$( "#email_report-dialog" ).dialog({
+			autoOpen: true,
+			height: 700,
+			width: 830,
+			modal: true,
+			title: "Edit email_report",
+			buttons: {
+				"Save email report": function() {
+					update_email_report_list_selections();
+					var bValid = validate_email_report();
+
+					if ( bValid ) {
+						$( "#email_report-form" ).submit();
+						$( this ).dialog( "close" );
+					}
+				},
+				Cancel: function() {
+					$( this ).dialog( "close" );
+				}
+			},
+			close: function() {
+				clear_email_report(init_tips);
+			}
+		});
+	}
+	
+	function delete_email_report(id, name){
+		$( "#email_report-delete-id" ).val(id);
+		
+		$( "#email_report-delete-message" ).html('<span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>The email_report <strong>"' + name + '"</strong> will be deleted. Are you sure?');
+		$( "#email_report-delete-confirm" ).dialog({
+			autoOpen: true,
+			resizable: false,
+			height: 175,
+			width: 300,
+			modal: true,
+			buttons: {
+				"Delete email_report": function() {
+					$( "#email_report-delete-form" ).submit();
+					$( this ).dialog( "close" );
+				},
+				Cancel: function() {
+					$( this ).dialog( "close" );
+				}
+			},
+			close: function() {				
+			}
+		});
+	}
+</script>
+{% endblock %}
+{% block styles %}
+	
+	#content li{
+		list-style: none;
+		margin:0;
+		padding:0;
+	}
+	
+	div.ui-datepicker{
+		font-size:0.7em;
+		z-index:999;
+	}
+	
+	xxlabel {
+		font-size: 0.9em;
+	}
+	
+	div.container{
+		width: 900px;
+	}
+
+	.txtlong{
+		width: 830px;
+		padding: 3px;
+	}
+	
+	.help{
+		font-size: 0.8em;
+		color: #888888;
+		margin: 0;
+		padding: 0;
+	}
+	
+	div.accordion-content{padding: 0; margin: 0;}
+	
+	div.dialog label, div.dialog input { display:block; }
+	div.dialog input.text{ margin-bottom:12px; width:95%; padding: .4em; }
+	div.dialog textarea.text { width:95%; padding: .4em; }
+	fieldset { padding:0; border:0; margin-top:25px; }
+	div.admin-list { width: 840px; margin: 0; }
+	div.admin-list table { margin: 1em 0; border-collapse: collapse; width: 100%; }
+	div.admin-list table td, div.admin-list table th { border: 1px solid #eee; padding: .6em 10px; text-align: left;white-space: nowrap; }
+	.ui-dialog input.ui-state-error { padding: .3em; }
+	.validateTips { border: 1px solid transparent; padding: 0.3em; }
+	
+	select { width: 405px;margin-bottom: 20px; }
+	
+	div.dialog label.lblRadio {display:inline-block;}
+	
+	.selectable .ui-selecting { background: #FECA40; }
+	.selectable .ui-selected { background: #F39814; color: white; }
+	.selectable { list-style-type: none; margin: 0; padding: 0; width: 100%; }
+	.selectable li { margin: 2px; padding: 0.4em; font-size: 0.85em; height: 12px; }
+	
+	.ui-widget-overlay { position: fixed;  /* fixes ie issue*/}
+	
+	.row-modified td {background-color: #FECA40;}
+
+	
+{% endblock %}
+{% block header %}{{domain.full_name}}{% endblock %}
+{% block navigation %}
+			   <li><a href="/ui/map/{{domain.id}}">Map View</a></li>
+			   <li><a href="/ui/reporters/{{domain.id}}">Search Reporters</a></li>
+			   <li><strong>Admin</strong></li>
+			   {% endblock %}
+{% block content %}
+	
+<div class="container">
+	<div class="ui-widget ui-widget-content" style="padding-left: 20px;">
+	<p>You are currently modifying the administrator settings for <strong>{{ domain.full_name }}</strong>.</p>
+	{%if message%}<p><i>{{message}}</i></p>{%endif%}
+	</div>
+	<br/>
+	<div id="accordion">
+		<h3><a href="#">General Settings</a></h3>
+		<div>
+			<form id="form" action="/ui/admin/{{domain.id}}#general" method="post">
+				{% csrf_token %}
+				<label>No failure message: </label><br/>
+				<input id="txtOkMessage" name="txtOkMessage" class="txtlong ui-widget-content ui-corner-all" type="text" maxlength="250" value="{{okmessage}}"/>
+				<br/>
+				<p class="help">Can use %date%, %sitename%, %sitecode% and %operatorname% as place-holders</p>			
+				<br/>
+				<div style="clear: both"></div>
+				<div style="float: right">
+					<button class="btnSave">Save Settings</button>
+				</div>
+			</form>
+		</div>
+		<h3><a href="#Managers">Managers</a></h3>
+		<div class="accordion-content">
+			<div class="ui-widget admin-list">
+				<table id="users" class="ui-widget ui-widget-content">
+					<thead>
+						<tr class="ui-widget-header ">
+							<th>Name</th>
+							<th>Telephone</th>
+							<th>Email</th>
+							<th style="width: 10px;">&nbsp;</th>
+							<th style="width: 10px;">&nbsp;</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for manager in managers %}
+							{%if manager.id == modified_manager_id %}
+								<tr class="row-modified">
+							{%else%}
+								<tr>
+							{%endif%}						
+							<td>{{manager.name}}</td>
+							<td>{{manager.phone_number}}</td>
+							<td>{{manager.email}}</td>
+							<td><button class="btnDelete" onclick="javascript:delete_manager({{manager.id}},'{{manager.name}}');">Delete</button></td>
+							<td><button class="btnEdit" onclick="javascript:edit_manager({{manager.id}},'{{manager.name}}','{{manager.phone_number}}','{{manager.email}}');">Edit</button></td>
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+			<div style="clear: both;"></div>
+			<div style="float: right;">
+				<button class="btnAdd" onclick="javascript:add_manager();">Add new manager</button>
+			</div>
+			<div class="dialog" id="manager-dialog" title="Add/Edit manager" style="display:none;">
+				<p id="manager-validation">Name and telephone fields are required.</p>			
+				<form id="manager-form" action="/ui/admin/{{domain.id}}#managers" method="post">
+					{% csrf_token %}
+					<fieldset>
+						<label for="manager-name">Name</label>
+						<input type="text" name="manager-name" id="manager-name" class="text ui-widget-content ui-corner-all" />					
+						<label for="manager-telephone">Telephone</label>
+						<input type="text" style="margin-bottom: 0;" name="manager-telephone" id="manager-telephone" value="" class="text ui-widget-content ui-corner-all" />
+						<p class="help">Telephone number must include international dialing code, e.g. 27836301234</p>
+						<label for="manager-email" style="margin-top: 14px;">Email</label>
+						<input type="text" name="manager-email" id="manager-email" value="" class="text ui-widget-content ui-corner-all" />
+					</fieldset>
+					<input type="hidden"  name="manager-id" id="manager-id" value=""/>
+				</form>
+			</div>
+			<div id="manager-delete-confirm" title="Confirm delete" style="display:none;">
+				<form id="manager-delete-form" action="/ui/admin/{{domain.id}}#managers" method="post">
+					{% csrf_token %}
+					<p id="manager-delete-message"><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>The selected manager will be deleted. Are you sure?</p>
+					<input type="hidden" name="manager-delete-id" id="manager-delete-id" value=""/>
+				</form>
+			</div>
+		</div>
+		
+		<h3><a href="#notifications">Failure Notifications</a></h3>
+		<div class="accordion-content">
+			<div class="ui-widget admin-list">
+				<table id="users" class="ui-widget ui-widget-content">
+					<thead>
+						<tr class="ui-widget-header ">
+							<th>Description</th>
+							<th>Form Name</th>
+							<th>Form Namespace</th>
+							<th style="width: 10px;">&nbsp;</th>
+							<th style="width: 10px;">&nbsp;</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for notification in notifications %}
+							{%if notification.id == modified_notification_id %}
+								<tr class="row-modified">
+							{%else%}
+								<tr>
+							{%endif%}	
+							<td>{{notification.description}}</td>
+							<td>{{notification.xform.form_display_name}}</td>
+							<td>{{notification.xform.target_namespace}}</td>							
+							<td><button class="btnDelete" onclick="javascript:delete_notification({{notification.id}},'{{notification.description}}');">Delete</button></td>
+							<td><button class="btnEdit" onclick="javascript:edit_notification(
+								{{notification.id}},
+								'{{notification.description}}',
+								'{{notification.xform.target_namespace}}',
+								'{{notification.message_text}}',
+								'{{notification.send_message_per_error}}',
+								'{{notification.send_to_operator}}',
+								'{% for nr in notification.normalrange.all %}{{nr.id}},{% endfor %}',
+								'{% for nr in notification.samplingpoint.all %}{{nr.id}},{% endfor %}',
+								'{% for nr in notification.manager.all %}{{nr.id}},{% endfor %}'
+								);">Edit</button></td>
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+			<div style="clear: both;"></div>
+			<div style="float: right;">
+				<button class="btnAdd" onclick="javascript:add_notification();">Add new notification</button>
+			</div>
+			<div class="dialog ui-widget-content" id="notification-dialog" title="Add/Edit notification" style="display:none;">
+				<p id="notification-validation">The following fields are required: Description, XForm, Message Text and at least one normal range. If no sampling points are selected this notification will apply to all points.</p>			
+				<form id="notification-form" action="/ui/admin/{{domain.id}}#notifications" method="post">
+					{% csrf_token %}
+				<fieldset>
+					<div style="width: 48%; float:left;">
+						<label for="notification-description">Description</label>
+						<input type="text" name="notification-description" id="notification-description" class="text ui-widget-content ui-corner-all" />
+						
+						<label for="notification-xform">XForm</label>
+						<select name="notification-xform" id="notification-xform">
+							<option value="" selected="selected">Select XForm...</option>
+							{% for xform in xforms %}
+							<option value="{{xform.target_namespace}}">{{xform.form_display_name}}</option>
+							{% endfor %}
+						</select>
+						
+						
+					</div>
+					
+					<div style="width: 48%; float:left; margin-left: 25px;">
+						<label for="notification-messagetext">Message text</label>
+						<textarea name="notification-messagetext" id="notification-messagetext" value="" class="text ui-widget-content ui-corner-all" ></textarea>
+						<p class="help">Can use %date%, %sitename%, %sitecode% and %operatorname% as place-holders</p>
+						
+						
+					</div>
+					<!--<div style="clear:both;margin-top:10px;"></div>-->
+					<div style="width: 48%; float:left;clear:both;margin-top: 18px;">
+						<label for="notification-sendpererror">Send message per error:</label>
+						<div class="radio" id="notification-sendpererror">
+							<input type="radio" value="SEND_ONE" id="radSendOneMessage" name="notification-sendpererror"  checked="checked"/><label class="lblRadio" for="radSendOneMessage"> Send one message</label>
+							<input type="radio" value="SEND_MANY" id="radSendMessagePerError" name="notification-sendpererror" /><label class="lblRadio" for="radSendMessagePerError">Send a message per error</label>						
+						</div>
+					</div>
+					
+					<div style="width: 48%; float:left; margin-left: 25px;margin-top: 18px;">
+						<label for="notification-sendtooperator" >Message recipient:</label>
+						<div class="radio" id="notification-sendtooperator">
+							<input type="radio" value="TO_MANAGER" id="radSendToManagers" name="notification-sendtooperator" onchange="if (this.checked){$('#div-notification-managers').show(300);};" checked="checked"/><label class="lblRadio" for="radSendToManagers">Send to manager(s)</label>
+							<input type="radio" value="TO_OPERATOR" id="radSendToOperator" name="notification-sendtooperator" onchange="if (this.checked){$('#div-notification-managers').hide(300);};" /><label class="lblRadio" for="radSendToOperator"> Send to operator</label>
+						</div>
+					</div>
+					
+					
+					<input type="hidden"  name="notification-selected-normalranges" id="notification-selected-normalranges" value=""/>
+					<div style="width: 268px; float:left; clear:both; margin-top: 18px;">
+						<label for="notification-normalranges">Normal range(s)</label>
+						<div class="ui-widget-content" style="overflow: auto; padding: 3px; height: 295px;">
+							<ol id="notification-normalranges" class="selectable">
+								{% for nr in normal_ranges %}
+								<li class="ui-widget-content">{{nr.description}} ({{nr.minimum}} - {{nr.maximum}})</li>
+								{% endfor %}
+							</ol>
+						</div>
+					</div>
+					
+					<input type="hidden"  name="notification-selected-samplingpoints" id="notification-selected-samplingpoints" value=""/>
+					<div style="width: 268px; float:left; margin-left: 25px;margin-top: 18px;">
+						<label for="notification-samplingpoints">Sampling point(s) <span class="help">(leave blank for all)</span></label>
+						<div class="ui-widget-content" style="overflow: auto; padding: 3px; height: 295px;">
+							<ol id="notification-samplingpoints" class="selectable">
+								{% for sp in sampling_points %}
+								<li class="ui-widget-content">{{sp.name}}</li>
+								{% endfor %}
+							</ol>
+						</div>
+					</div>
+					
+					<input type="hidden"  name="notification-selected-managers" id="notification-selected-managers" value=""/>
+					<div id="div-notification-managers" style="width: 268px; float:left; margin-left: 25px;margin-top: 18px;">
+						<label for="notification-managers">Manager(s)</label>
+						<div class="ui-widget-content" style="overflow: auto; padding: 3px; height: 295px;">
+							<ol id="notification-managers" class="selectable">
+								{% for m in managers %}
+								<li class="ui-widget-content">{{m.name}}</li>
+								{% endfor %}
+							</ol>
+						</div>
+					</div>	
+					
+				</fieldset>
+				<input type="hidden"  name="notification-id" id="notification-id" value=""/>
+
+                <div style="clear: both;"></div>
+                <div>Hold your Control key and click to select multiple items.</div>
+                
+				</form>
+			</div>
+			<div id="notification-delete-confirm" title="Confirm delete" style="display:none;">
+				<form id="notification-delete-form" action="/ui/admin/{{domain.id}}#notifications" method="post">
+					{% csrf_token %}
+					<p id="notification-delete-message"><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>The selected notification will be deleted. Are you sure?</p>
+					<input type="hidden" name="notification-delete-id" id="notification-delete-id" value=""/>
+				</form>
+			</div>
+		</div>
+		
+		<h3><a href="#email_reports">Email Reports</a></h3>
+		<div class="accordion-content">
+			<div class="ui-widget admin-list">
+				<table id="users" class="ui-widget ui-widget-content">
+					<thead>
+						<tr class="ui-widget-header ">
+							<th>Description</th>
+							<th>Frequency</th>
+							<th>Next Send Date</th>							
+							<th style="width: 10px;">&nbsp;</th>
+							<th style="width: 10px;">&nbsp;</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for email_report in email_reports %}
+							{%if email_report.id == modified_email_report_id %}
+								<tr class="row-modified">
+							{%else%}
+								<tr>
+							{%endif%}						
+							<td>{{email_report.description}}</td>
+							<td>{{email_report.get_frequency_description}}</td>
+							<td>{{email_report.next_send_time|date:"Y-m-d"}}</td>							
+							<td><button class="btnDelete" onclick="javascript:delete_email_report({{email_report.id}},'{{email_report.description}}');">Delete</button></td>
+							<td><button class="btnEdit" onclick="javascript:edit_email_report(
+								{{email_report.id}},
+								'{{email_report.description}}',
+								'{{email_report.template.id}}',
+								'{{email_report.delivery_type}}',
+								'{{email_report.weekly_delivery_day}}',
+								'{% for nr in email_report.area.all %}{{nr.id}},{% endfor %}',
+								'{% for nr in email_report.manager.all %}{{nr.id}},{% endfor %}',
+								'{% for nr in email_report.day.all %}{{nr.id}},{% endfor %}'
+								);">Edit</button></td>
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+			<div style="clear: both;"></div>
+			<div style="float: right;">
+				<button class="btnAdd" onclick="javascript:add_email_report();">Add new email report</button>
+			</div>
+			<div class="dialog" id="email_report-dialog" title="Add/Edit email_report" style="display:none;">
+				<p id="email_report-validation">Description and managers are required.</p>			
+				<form id="email_report-form" action="/ui/admin/{{domain.id}}#email_reports" method="post">
+					{% csrf_token %}
+					<fieldset>
+						<label for="email_report-description">Description</label>
+						<input type="text" name="email_report-description" id="email_report-description" class="text ui-widget-content ui-corner-all" />					
+						
+						<label for="email_report-template">Email template</label>
+						<select name="email_report-template" id="email_report-template" style="width: 320px;">
+							{% for et in email_templates %}
+							<option value="{{et.id}}" {%if forloop.first%}selected="selected"{%endif%}>{{et.name}}</option>
+							{% endfor %}
+						</select>
+						
+						<label for="email_report-type" style="margin-top: 18px;">Report frequency</label>
+						<div class="radio" id="email_report-type">
+							<input type="radio" value="WEEKLY" id="radWeekly" name="email_report-type"  checked="checked" onchange="if (this.checked){$('#div-email_report-delivery_day').show(300);$('#div-email_report-days').hide(300);};"/><label class="lblRadio" for="radWeekly">Weekly</label>
+							<input type="radio" value="BIMONTHLY" id="radBiMonthly" name="email_report-type"  onchange="if (this.checked){$('#div-email_report-delivery_day').hide(300);$('#div-email_report-days').hide(300);};"/><label class="lblRadio" for="radBiMonthly">Bi-monthly</label>
+							<input type="radio" value="MONTHLY" id="radMonthly" name="email_report-type"  onchange="if (this.checked){$('#div-email_report-delivery_day').hide(300);$('#div-email_report-days').hide(300);};"/><label class="lblRadio" for="radMonthly">Monthly</label>
+							<input type="radio" value="CUSTOM" id="radCustom" name="email_report-type"  onchange="if (this.checked){$('#div-email_report-delivery_day').hide(300);$('#div-email_report-days').show(300);};"/><label class="lblRadio" for="radCustom">Custom</label>						
+						</div>
+						<div id="div-email_report-delivery_day">
+							<label for="email_report-delivery_day" style="margin-top: 18px;">Delivery day</label>
+							<select name="email_report-delivery_day" id="email_report-delivery_day" style="width: 320px;">
+								<option value="" selected="selected">Select delivery day...</option>
+								{% for dd in delivery_days %}
+								<option value="{{dd.0}}">{{dd.1}}</option>
+								{% endfor %}
+							</select>
+						</div>
+                                                
+						<input type="hidden"  name="email_report-selected-areas" id="email_report-selected-areas" value=""/>
+						<div id="div-email_report-areas" style="width: 268px; clear:both;float:left; margin-left: 0px;margin-top: 18px;">
+							<label for="email_report-areas">Area(s) <span class="help">(leave blank for all)</span></label>
+							<div class="ui-widget-content" style="overflow: auto; padding: 3px; height: 250px;">
+								<ol id="email_report-areas" class="selectable">
+									{% for a in areas %}
+									<li class="ui-widget-content">{{a.name}}</li>
+									{% endfor %}
+								</ol>
+							</div>
+						</div>
+						
+						<input type="hidden"  name="email_report-selected-managers" id="email_report-selected-managers" value=""/>
+						<div id="div-email_report-managers" style="width: 268px; float:left; margin-left: 25px;margin-top: 18px;">
+							<label for="email_report-managers">Manager(s)</label>
+							<div class="ui-widget-content" style="overflow: auto; padding: 3px; height: 250px;">
+								<ol id="email_report-managers" class="selectable">
+									{% for m in managers %}
+									<li class="ui-widget-content">{{m.name}}</li>
+									{% endfor %}
+								</ol>
+							</div>
+						</div>	
+						
+						<input type="hidden" name="email_report-selected-days" id="email_report-selected-days" value=""/>						
+						<div id="div-email_report-days" style="width: 200px; float:left; margin-left: 25px;margin-top: 18px;display:none;">
+							<label for="email_report-days">Days to receive reports</label>
+							<div class="ui-widget-content" style=" height: 110px; width: 200px;">
+								<ol id="email_report-days" class="selectable">
+									{% for d in days %}
+									<li class="ui-widget-content" style="padding: 2px;display:inline-block;width:15px;cursor: default;">{{d.day}}</li>
+									{% endfor %}
+								</ol>
+							</div>
+							<p class="help">
+								Select the days that you want the reports to be sent on. The reports will contain data from and including the previously selected report day up to the day before the report is sent.
+							</p>
+						</div>	
+					</fieldset>
+                
+                    <div style="clear: both;"></div>
+                    <div>Hold your Control key and click to select multiple items.</div>
+                    
+					<input type="hidden"  name="email_report-id" id="email_report-id" value=""/>
+				</form>
+			</div>
+			<div id="email_report-delete-confirm" title="Confirm delete" style="display:none;">
+				<form id="email_report-delete-form" action="/ui/admin/{{domain.id}}#email_reports" method="post">
+					{% csrf_token %}
+					<p id="email_report-delete-message"><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>The selected email report will be deleted. Are you sure?</p>
+					<input type="hidden" name="email_report-delete-id" id="email_report-delete-id" value=""/>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+{% endblock %}
